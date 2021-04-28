@@ -13,8 +13,10 @@ const root = mod('root', (css, use, $) => {
                 })
             );
         },
-        oncreate() {
+        oncreate(vnode) {
             console.log('Initialized');
+            const canvas = vnode.instance.children[1].dom;
+            require('./setup')(canvas);
         },
     };
 });
