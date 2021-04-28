@@ -25,6 +25,7 @@ specifiers:
   stylelint: ^13.13.0
   stylelint-config-sass-guidelines: ^8.0.0
   terser-webpack-plugin: ^5.1.1
+  twgl.js: ^4.19.1
   webpack: ^5.36.0
   webpack-bundle-analyzer: ^4.4.1
   webpack-cli: ^4.6.0
@@ -36,6 +37,7 @@ dependencies:
   hyperscript-adapter: 7.1.3
   hyperscript-adapter-modules: 1.2.2_hyperscript-adapter@7.1.3
   mithril: 2.0.4
+  twgl.js: 4.19.1
 
 devDependencies:
   clean-webpack-plugin: 3.0.0_webpack@5.36.0
@@ -6250,6 +6252,10 @@ packages:
   /tweetnacl/0.14.5:
     resolution: {integrity: sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=}
     dev: true
+
+  /twgl.js/4.19.1:
+    resolution: {integrity: sha512-zI28+xIQskBXpnoX9rsJ2n6zrx0AN3yFZASyp4u1IBscndUKlzRBwNtnD17BoO+RzQieuJksPzJKy8H6lRa97A==}
+    dev: false
 
   /type-check/0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}

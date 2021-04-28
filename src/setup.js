@@ -41,6 +41,7 @@ module.exports = (canvas) => {
     const gl = canvas.getContext('webgl2', {
         powerPreference: 'high-performance',
         failIfMajorPerformanceCaveat: true,
+        antialias: false,
     });
     if (gl === null) {
         throw new Error('Unable to get high-performance webgl2 context');
