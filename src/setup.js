@@ -70,7 +70,7 @@ module.exports = (canvas) => {
         const normalize = false; // don't normalize the data
         const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
         const offset = 0; // start at the beginning of the buffer
-        gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+        gl.vertexAttribIPointer(positionAttributeLocation, size, type, normalize, stride, offset);
     }
 
     const resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
