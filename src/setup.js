@@ -57,7 +57,7 @@ module.exports = (canvas) => {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
     const positions = [10, 20, 80, 20, 10, 30, 10, 30, 80, 20, 80, 30];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Uint32Array(positions), gl.STATIC_DRAW);
 
     const vao = gl.createVertexArray();
     gl.bindVertexArray(vao);
@@ -66,7 +66,7 @@ module.exports = (canvas) => {
 
     {
         const size = 2; // 2 components per iteration
-        const type = gl.FLOAT; // the data is 32bit floats
+        const type = gl.UNSIGNED_INT; // the data is 32bit floats
         const normalize = false; // don't normalize the data
         const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
         const offset = 0; // start at the beginning of the buffer
