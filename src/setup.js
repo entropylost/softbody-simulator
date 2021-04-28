@@ -55,7 +55,7 @@ module.exports = (canvas) => {
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    const positions = [0, 0, 0, 0.5, 0.7, 0];
+    const positions = [10, 20, 80, 20, 10, 30, 10, 30, 80, 20, 80, 30];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
     const vao = gl.createVertexArray();
@@ -63,10 +63,32 @@ module.exports = (canvas) => {
 
     gl.enableVertexAttribArray(positionAttributeLocation);
 
-    const size = 2; // 2 components per iteration
-    const type = gl.FLOAT; // the data is 32bit floats
-    const normalize = false; // don't normalize the data
-    const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
-    const offset = 0; // start at the beginning of the buffer
-    gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+    {
+        const size = 2; // 2 components per iteration
+        const type = gl.FLOAT; // the data is 32bit floats
+        const normalize = false; // don't normalize the data
+        const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
+        const offset = 0; // start at the beginning of the buffer
+        gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+    }
+
+    const resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
+
+    gl.viewport(0, 0, canvas.width, canvas.height);
+
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.useProgram(program);
+
+    gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
+
+    gl.bindVertexArray(vao);
+
+    {
+        const primitiveType = gl.TRIANGLES;
+        const offset = 0;
+        const count = 6;
+        gl.drawArrays(primitiveType, offset, count);
+    }
 };
