@@ -13,7 +13,7 @@ const plugins = [
     new CleanWebpackPlugin(),
     // Generates an HTML file from a template
     new HtmlWebpackPlugin({
-        title: 'webpack-starter',
+        title: 'softbody-simulator',
         favicon: path.resolve(__dirname, '../favicon.svg'),
         template: paths.src + '/template.html', // template file
         filename: 'index.html', // output file
