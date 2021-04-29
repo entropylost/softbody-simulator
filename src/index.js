@@ -6,16 +6,15 @@ const root = mod('root', (css, use, $) => {
     return {
         view() {
             return $._(
-                $.h1('Hello World!'),
                 $.canvas$simulation({
-                    height: 1 << 8,
-                    width: 1 << 8,
+                    height: 1 << 9,
+                    width: 1 << 9,
                 })
             );
         },
         oncreate(vnode) {
             console.log('Initialized');
-            const canvas = vnode.instance.children[1].dom;
+            const canvas = vnode.instance.children[0].dom;
             require('./setup')(canvas);
         },
     };
