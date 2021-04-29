@@ -4,9 +4,11 @@ precision highp float;
 
 // an attribute is an input (in) to a vertex shader.
 // It will receive data from a buffer
-in uvec2 a_position;
-
 uniform uvec2 u_resolution;
+
+in uvec2 a_position;
+in uvec2 a_velocity;
+
 // all shaders have a main function
 void main() {
     // convert the position from pixels to 0.0 to 1.0
