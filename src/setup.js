@@ -12,8 +12,14 @@ ${code}`;
 }
 
 function particleTexturesAndFrameBuffer(gl, sources) {
+    const sizes = {
+        active: 1,
+        posVel: 4,
+        orthoConnections: 4,
+        diagConnections: 4,
+    };
     const specification = Object.entries({
-        deleted: {
+        active: {
             internalFormat: gl.R8UI,
             format: gl.RED_INTEGER,
         },
@@ -31,28 +37,32 @@ function particleTexturesAndFrameBuffer(gl, sources) {
         },
     }).reduce((a, x) => {
         const oldSource = sources[x[0]];
-        const buffer = new ArrayBuffer(
-            DATA_TEXTURE_WIDTH * Math.ceil(oldSource.length / DATA_TEXTURE_WIDTH) * oldSource.BYTES_PER_ELEMENT
-        );
+        const size = sizes[x[0]];
+        const height = Math.ceil(oldSource.length / (DATA_TEXTURE_WIDTH * size));
+        const buffer = new ArrayBuffer(DATA_TEXTURE_WIDTH * height * size * oldSource.BYTES_PER_ELEMENT);
         const src = new oldSource.constructor(buffer);
         src.set(oldSource);
         a[x[0]] = {
             width: DATA_TEXTURE_WIDTH,
+            height,
             src,
             ...x[1],
         };
         return a;
     }, {});
 
-    console.log(specification);
-
     const textures = twgl.createTextures(gl, specification);
-    const framebuffer = twgl.createFramebufferInfo(gl, [
-        { attachment: textures.deleted },
-        { attachment: textures.posVel },
-        { attachment: textures.orthoConnections },
-        { attachment: textures.diagConnections },
-    ]);
+    const framebuffer = twgl.createFramebufferInfo(
+        gl,
+        [
+            { attachment: textures.active },
+            { attachment: textures.posVel },
+            { attachment: textures.orthoConnections },
+            { attachment: textures.diagConnections },
+        ],
+        DATA_TEXTURE_WIDTH,
+        textures.active.length / DATA_TEXTURE_WIDTH
+    );
     return {
         textures,
         framebuffer,
@@ -72,11 +82,13 @@ module.exports = (canvas) => {
     const len = 1500;
 
     const sources = {
-        deleted: new Uint8Array(len),
-        posVel: new Int32Array(len),
-        orthoConnections: new Uint32Array(len),
-        diagConnections: new Uint32Array(len),
+        active: new Uint8Array(len),
+        posVel: new Int32Array(len * 4),
+        orthoConnections: new Uint32Array(len * 4),
+        diagConnections: new Uint32Array(len * 4),
     };
+
+    console.log(sources);
 
     const programPhysics = twgl.createProgramInfo(gl, [
         generateConstants(require('./physics.vert'), canvas),
