@@ -1,6 +1,72 @@
 'use strict';
 
 const twgl = require('twgl.js');
+const DATA_TEXTURE_WIDTH = 1024;
+
+function particleTextures(prefix, gl, sources) {
+    const specification = {
+        deleted: {
+            internalFormat: gl.R8I,
+            format: gl.RED_INTEGER,
+        },
+        posVel: {
+            internalFormat: gl.RGBA32I,
+            format: gl.RGBA_INTEGER,
+        },
+        orthoConnections: {
+            internalFormat: gl.RGBA32U,
+            format: gl.RGBA_INTEGER,
+        },
+        diagConnections: {
+            internalFormat: gl.RGBA32U,
+            format: gl.RGBA_INTEGER,
+        },
+    }
+        .entries()
+        .reduce((a, x) => {
+            const oldSource = sources[x[0]];
+            const buffer = new ArrayBuffer(
+                DATA_TEXTURE_WIDTH *
+                    Math.ceil(oldSource.length / DATA_TEXTURE_WIDTH) *
+                    (oldSource.byteLength / oldSource.length)
+            );
+            const src = new oldSource.constructor(buffer);
+            src.set(oldSource);
+            a[x[0]] = {
+                width: DATA_TEXTURE_WIDTH,
+                src,
+                ...x[1],
+            };
+            return a;
+        }, {});
+
+    return twgl.createTextures(gl, {
+        deleted: {
+            internalFormat: gl.R8I,
+            format: gl.RED_INTEGER,
+            width: DATA_TEXTURE_WIDTH,
+            src: sources.deleted,
+        },
+        posVel: {
+            internalFormat: gl.RGBA32I,
+            format: gl.RGBA_INTEGER,
+            width: DATA_TEXTURE_WIDTH,
+            src: sources.posVel,
+        },
+        orthoConnections: {
+            internalFormat: gl.RGBA32U,
+            format: gl.RGBA_INTEGER,
+            width: DATA_TEXTURE_WIDTH,
+            src: sources.orthoConnections,
+        },
+        diagConnections: {
+            internalFormat: gl.RGBA32U,
+            format: gl.RGBA_INTEGER,
+            width: DATA_TEXTURE_WIDTH,
+            src: sources.diagConnections,
+        },
+    }); // Figure out sizes and mapping.
+}
 
 module.exports = (canvas) => {
     const gl = twgl.getContext(canvas, {
