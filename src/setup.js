@@ -3,7 +3,14 @@
 const twgl = require('twgl.js');
 const DATA_TEXTURE_WIDTH = 1024;
 
-function particleTextures(prefix, gl, sources) {
+function generateConstants(code, canvas) {
+    return `
+const int DATA_TEXTURE_WIDTH = ${DATA_TEXTURE_WIDTH};
+const ivec2 WORLD_SIZE = ivec2(${canvas.width}, ${canvas.height});
+${code}`;
+}
+
+function particleTexturesAndFrameBuffer(prefix, gl, sources) {
     const specification = {
         deleted: {
             internalFormat: gl.R8I,
@@ -40,32 +47,19 @@ function particleTextures(prefix, gl, sources) {
             return a;
         }, {});
 
-    return twgl.createTextures(gl, {
-        deleted: {
-            internalFormat: gl.R8I,
-            format: gl.RED_INTEGER,
-            width: DATA_TEXTURE_WIDTH,
-            src: sources.deleted,
-        },
-        posVel: {
-            internalFormat: gl.RGBA32I,
-            format: gl.RGBA_INTEGER,
-            width: DATA_TEXTURE_WIDTH,
-            src: sources.posVel,
-        },
-        orthoConnections: {
-            internalFormat: gl.RGBA32U,
-            format: gl.RGBA_INTEGER,
-            width: DATA_TEXTURE_WIDTH,
-            src: sources.orthoConnections,
-        },
-        diagConnections: {
-            internalFormat: gl.RGBA32U,
-            format: gl.RGBA_INTEGER,
-            width: DATA_TEXTURE_WIDTH,
-            src: sources.diagConnections,
-        },
-    }); // Figure out sizes and mapping.
+    console.log(specification);
+
+    const textures = twgl.createTextures(gl, specification);
+    const framebuffer = twgl.createFramebufferInfo(gl, [
+        { attachment: textures.deleted },
+        { attachment: textures.posVel },
+        { attachment: textures.orthoConnections },
+        { attachment: textures.diagConnections },
+    ]);
+    return {
+        textures,
+        framebuffer,
+    };
 }
 
 module.exports = (canvas) => {
