@@ -82,12 +82,12 @@ module.exports = (canvas) => {
 
     gl.useProgram(program);
 
-    gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
+    gl.uniform2ui(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
     gl.bindVertexArray(vao);
 
     {
-        const primitiveType = gl.TRIANGLES;
+        const primitiveType = gl.POINTS;
         const offset = 0;
         const count = 6;
         gl.drawArrays(primitiveType, offset, count);

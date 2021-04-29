@@ -1,14 +1,16 @@
 #version 300 es
 
+precision highp float;
+
 // an attribute is an input (in) to a vertex shader.
 // It will receive data from a buffer
 in uvec2 a_position;
 
-uniform vec2 u_resolution;
+uniform uvec2 u_resolution;
 // all shaders have a main function
 void main() {
     // convert the position from pixels to 0.0 to 1.0
-    vec2 zeroToOne = vec2(a_position) / u_resolution;
+    vec2 zeroToOne = vec2(a_position) / vec2(u_resolution);
 
     // convert from 0->1 to 0->2
     vec2 zeroToTwo = zeroToOne * 2.0;
@@ -17,4 +19,5 @@ void main() {
     vec2 clipSpace = zeroToTwo - 1.0;
 
     gl_Position = vec4(clipSpace, 0, 1);
+    gl_PointSize = 1.0;
 }

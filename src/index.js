@@ -8,8 +8,8 @@ const root = mod('root', (css, use, $) => {
             return $._(
                 $.h1('Hello World!'),
                 $.canvas$simulation({
-                    height: 200,
-                    width: 200,
+                    height: 1 << 8,
+                    width: 1 << 8,
                 })
             );
         },
