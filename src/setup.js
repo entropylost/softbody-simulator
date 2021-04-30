@@ -1,91 +1,9 @@
 'use strict';
 
 const twgl = require('twgl.js');
-const DATA_TEXTURE_WIDTH = 4096;
-
-function generateConstantsAndUtils(code, canvas) {
-    return `#version 300 es
-const int DATA_TEXTURE_WIDTH = ${DATA_TEXTURE_WIDTH};
-const int DATA_TEXTURE_WIDTH_POWER = ${Math.log2(DATA_TEXTURE_WIDTH)};
-const ivec2 WORLD_SIZE = ivec2(${canvas.width}, ${canvas.height});
-const int PRECISION = 10;
-
-precision highp float;
-precision highp isampler2D;
-precision highp usampler2D;
-
-${require('./utils.glsl')}
-${code}`;
-}
-
-function particleTexturesAndFrameBuffer(gl, sources) {
-    const sizes = {
-        isActive: 1,
-        posVel: 4,
-        orthoConnections: 4,
-        diagConnections: 4,
-    };
-    const specification = Object.entries({
-        isActive: {
-            internalFormat: gl.R8UI,
-            format: gl.RED_INTEGER,
-        },
-        posVel: {
-            internalFormat: gl.RGBA32I,
-            format: gl.RGBA_INTEGER,
-        },
-        orthoConnections: {
-            internalFormat: gl.RGBA32UI,
-            format: gl.RGBA_INTEGER,
-        },
-        diagConnections: {
-            internalFormat: gl.RGBA32UI,
-            format: gl.RGBA_INTEGER,
-        },
-    }).reduce((a, [k, v]) => {
-        const oldSource = sources[k];
-        const size = sizes[k];
-        const height = Math.ceil(oldSource.length / (DATA_TEXTURE_WIDTH * size));
-        const buffer = new ArrayBuffer(DATA_TEXTURE_WIDTH * height * size * oldSource.BYTES_PER_ELEMENT);
-        const src = new oldSource.constructor(buffer);
-        src.set(oldSource);
-        a[k] = {
-            min: gl.NEAREST,
-            max: gl.NEAREST,
-            width: DATA_TEXTURE_WIDTH,
-            height,
-            src,
-            ...v,
-        };
-        return a;
-    }, {});
-
-    const height = specification.isActive.height;
-
-    Object.values(specification).forEach((a) => {
-        if (a.height !== height) {
-            throw new Error('Heights are not consistent');
-        }
-    });
-
-    const textures = twgl.createTextures(gl, specification);
-    const framebuffer = twgl.createFramebufferInfo(
-        gl,
-        [
-            { attachment: textures.isActive },
-            { attachment: textures.posVel },
-            { attachment: textures.orthoConnections },
-            { attachment: textures.diagConnections },
-        ],
-        DATA_TEXTURE_WIDTH,
-        height
-    );
-    return {
-        textures,
-        framebuffer,
-        size: [DATA_TEXTURE_WIDTH, height],
-    };
-}
+const { generateConstantsAndUtils } = require('./constants');
+const { particleTexturesAndFrameBuffer } = require('./textures');
+const initData = require('./init-data');
 
 module.exports = (canvas) => {
     const gl = twgl.getContext(canvas, {
@@ -97,14 +15,7 @@ module.exports = (canvas) => {
         throw new Error('Unable to get high-performance webgl2 context');
     }
 
-    const len = 1500;
-
-    const sources = {
-        isActive: new Uint8Array(len),
-        posVel: new Int32Array(len * 4),
-        orthoConnections: new Uint32Array(len * 4),
-        diagConnections: new Uint32Array(len * 4),
-    };
+    const sources = initData(require('./start.png'));
 
     console.log(sources);
 

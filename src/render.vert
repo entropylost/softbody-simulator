@@ -7,6 +7,7 @@ in float unused;
 
 void main () {
     ivec2 idVec = idFromInt(gl_VertexID);
-    gl_Position = vec4(vec2(texelFetch(posVel, idVec, 0).xy), 0.0, 1.0);
-    gl_PointSize = 3.0;
+    ivec2 pos = texelFetch(posVel, idVec, 0).xy;
+    gl_Position = vec4(vec2(pos >> PRECISION), 0.0, 1.0);
+    gl_PointSize = 1.0;
 }
