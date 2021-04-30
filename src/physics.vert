@@ -1,9 +1,7 @@
-precision highp float;
-
-uniform sampler2D isActive;
-uniform sampler2D posVel;
-uniform sampler2D orthoConnections;
-uniform sampler2D diagConnections;
+uniform usampler2D isActive;
+uniform isampler2D posVel;
+uniform usampler2D orthoConnections;
+uniform usampler2D diagConnections;
 
 in vec2 position;
 

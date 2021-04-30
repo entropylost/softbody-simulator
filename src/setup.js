@@ -1,13 +1,20 @@
 'use strict';
 
 const twgl = require('twgl.js');
-const DATA_TEXTURE_WIDTH = 1024;
+const DATA_TEXTURE_WIDTH = 4096;
 
-function generateConstants(code, canvas) {
+function generateConstantsAndUtils(code, canvas) {
     return `#version 300 es
 const int DATA_TEXTURE_WIDTH = ${DATA_TEXTURE_WIDTH};
+const int DATA_TEXTURE_WIDTH_POWER = ${Math.log2(DATA_TEXTURE_WIDTH)};
 const ivec2 WORLD_SIZE = ivec2(${canvas.width}, ${canvas.height});
 const int PRECISION = 10;
+
+precision highp float;
+precision highp isampler2D;
+precision highp usampler2D;
+
+${require('./utils.glsl')}
 ${code}`;
 }
 
@@ -102,12 +109,12 @@ module.exports = (canvas) => {
     console.log(sources);
 
     const physicsProgram = twgl.createProgramInfo(gl, [
-        generateConstants(require('./physics.vert'), canvas),
-        generateConstants(require('./physics.frag'), canvas),
+        generateConstantsAndUtils(require('./physics.vert'), canvas),
+        generateConstantsAndUtils(require('./physics.frag'), canvas),
     ]);
     const renderProgram = twgl.createProgramInfo(gl, [
-        generateConstants(require('./render.vert'), canvas),
-        generateConstants(require('./render.frag'), canvas),
+        generateConstantsAndUtils(require('./render.vert'), canvas),
+        generateConstantsAndUtils(require('./render.frag'), canvas),
     ]);
 
     let txfbRead = particleTexturesAndFrameBuffer(gl, sources);

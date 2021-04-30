@@ -1,5 +1,3 @@
-precision highp float;
-
 out vec4 o_color;
 
 void main () {
