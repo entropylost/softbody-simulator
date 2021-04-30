@@ -15,7 +15,8 @@ const root = mod('root', (css, use, $) => {
         oncreate(vnode) {
             console.log('Initialized');
             const canvas = vnode.instance.children[0].dom;
-            require('./setup')(canvas);
+            const update = require('./setup')(canvas);
+            update();
         },
     };
 });
