@@ -1,11 +1,28 @@
 'use strict';
 
-const { Base64: base64 } = require('js-base64');
 const { PRECISION } = require('./constants');
 
+const BASE64_MARKER = ';base64,';
+
+function convertBase64ToBinary(dataURI) {
+    const base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+    const base64 = dataURI.substring(base64Index);
+    const raw = window.atob(base64);
+    const rawLength = raw.length;
+    const array = new Uint8Array(new ArrayBuffer(rawLength));
+
+    for (let i = 0; i < rawLength; i++) {
+        array[i] = raw.charCodeAt(i);
+    }
+    return array.buffer;
+}
+
 module.exports = function initData(b64src) {
-    const src = base64.toUint8Array(b64src).buffer;
+    console.log('Loading map');
+    const src = convertBase64ToBinary(b64src);
     const [width, height] = Array.from(new Uint32Array(src, 0, 2));
+    console.log(`Width of map: ${width}`);
+    console.log(`Height of map: ${height}`);
     const data = new Uint8Array(src, 8);
 
     function get(x, y) {
@@ -27,9 +44,7 @@ module.exports = function initData(b64src) {
             }
         }
     }
-
     len++; // Zeroth element is special.
-
     const res = {
         isActive: new Uint8Array(len),
         posVel: new Int32Array(len * 4),
@@ -58,7 +73,7 @@ module.exports = function initData(b64src) {
                 if (get(x, y)) {
                     const i4 = id * 4;
                     res.isActive[id] = 1;
-                    res.posVel.set([x << PRECISION, y << PRECISION, 0, 0], i4);
+                    res.posVel.set([(x - width / 2) << PRECISION, (y - height / 2) << PRECISION, 0, 0], i4);
                     {
                         const orthoConnections = [];
                         if (get(x - 1, y)) {
@@ -96,6 +111,7 @@ module.exports = function initData(b64src) {
             }
         }
     }
-
-    return res;
+    console.log('Finished loading map:');
+    console.log(res);
+    return { sources: res, width, height };
 };

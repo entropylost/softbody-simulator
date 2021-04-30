@@ -6,6 +6,8 @@ const { particleTexturesAndFrameBuffer } = require('./textures');
 const initData = require('./init-data');
 
 module.exports = (canvas) => {
+    console.log('Initializing');
+
     const gl = twgl.getContext(canvas, {
         powerPreference: 'high-performance',
         failIfMajorPerformanceCaveat: true,
@@ -15,9 +17,12 @@ module.exports = (canvas) => {
         throw new Error('Unable to get high-performance webgl2 context');
     }
 
-    const sources = initData(require('/assets/start.map'));
+    const { sources, width, height } = initData(require('/assets/start.map'));
 
-    console.log(sources);
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
 
     const physicsProgram = twgl.createProgramInfo(gl, [
         generateConstantsAndUtils(require('./physics.vert'), canvas),
@@ -33,8 +38,6 @@ module.exports = (canvas) => {
 
     const dataTextureSize = txfbRead.size;
 
-    console.log(txfbRead);
-
     const physicsBufferInfo = twgl.createBufferInfoFromArrays(gl, {
         position: { numComponents: 2, data: [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1] },
     });
@@ -42,6 +45,8 @@ module.exports = (canvas) => {
     const renderBufferInfo = twgl.createBufferInfoFromArrays(gl, {
         unused: { numComponents: 1, data: new Array(dataTextureSize[0] * dataTextureSize[1]).fill(0) },
     });
+
+    console.log('Finished initializing');
 
     return function update() {
         // Resolve Collisions First
