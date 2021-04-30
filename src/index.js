@@ -9,7 +9,7 @@ const root = mod('root', (css, use, $) => {
                 $.canvas$simulation({
                     height: 1 << 9,
                     width: 1 << 9,
-                }),
+                })
             );
         },
         oncreate(vnode) {

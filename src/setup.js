@@ -15,7 +15,7 @@ module.exports = (canvas) => {
         throw new Error('Unable to get high-performance webgl2 context');
     }
 
-    const sources = initData(require('./start.png'));
+    const sources = initData(require('/assets/start.map'));
 
     console.log(sources);
 
