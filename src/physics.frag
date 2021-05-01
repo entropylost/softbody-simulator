@@ -8,19 +8,33 @@ layout(location = 1) out ivec4 o_posVel;
 layout(location = 2) out uvec4 o_orthoConnections;
 layout(location = 3) out uvec4 o_diagConnections;
 
-ivec2 orthoForce(inout uint thisIsActive, ivec4 thisPosVel, uint connection) {
+// Hack. Find better way to do this.
+int len(ivec2 a) {
+    return int(sqrt(float(a.x * a.x + a.y * a.y)));
+}
+
+uint orthoForce(inout ivec2 force, ivec4 thisPosVel, uint connection) {
     ivec2 connectionPos = idFromUint(connection);
     if (texelFetch(isActive, connectionPos, 0).x == 0u) {
-        return ivec2(0);
+        return 1u;
     }
     ivec4 otherPosVel = texelFetch(posVel, connectionPos, 0);
     ivec4 delta = otherPosVel - thisPosVel;
-    int length = int(sqrt(float(delta.x * delta.x + delta.y * delta.y))); // Hack. Find better way to do this.
-    ivec2 direction = (delta.xy << PRECISION) / length;
-    int force = length - ONE_IF * 2;
-    force = (((((force * force) >> PRECISION) * force) >> PRECISION) * SPRING_FACTOR_IF) >> PRECISION;
-    // Figure out what to do with delta.zw
-    return (force * direction) >> PRECISION;
+    {
+        int length = len(delta.xy);
+        ivec2 direction = (delta.xy << PRECISION) / length;
+        int forceMag = length - ONE_IF * 2;
+        forceMag = (((((forceMag * forceMag) >> PRECISION) * forceMag) >> PRECISION) * SPRING_FACTOR_IF) >> PRECISION;
+        force += (forceMag * direction) >> PRECISION;
+    }
+    {
+        int length = len(delta.zw);
+        ivec2 direction = (delta.zw << PRECISION) / length;
+        int forceMag = length;
+        forceMag = (((((forceMag * forceMag) >> PRECISION) * forceMag) >> PRECISION) * SPRING_FRICTION_IF) >> PRECISION;
+        force += (forceMag * direction) >> PRECISION;
+    }
+    return 1u;
 }
 
 void main() {
@@ -32,13 +46,13 @@ void main() {
     uvec4 diagConnections = texelFetch(diagConnections, idPos, 0);
 
     ivec2 force = ivec2(0, -GRAVITY_IF);
-    force += orthoForce(isActive, posVel, orthoConnections.x);
-    force += orthoForce(isActive, posVel, orthoConnections.y);
-    force += orthoForce(isActive, posVel, orthoConnections.z);
-    force += orthoForce(isActive, posVel, orthoConnections.w);
+    isActive &= orthoForce(force, posVel, orthoConnections.x);
+    isActive &= orthoForce(force, posVel, orthoConnections.y);
+    isActive &= orthoForce(force, posVel, orthoConnections.z);
+    isActive &= orthoForce(force, posVel, orthoConnections.w);
 
-    posVel.zw += (force << PRECISION) / FRAME_TIME_IF;
-    posVel.xy += (posVel.zw << PRECISION) / FRAME_TIME_IF;
+    posVel.zw += (force * FRAME_TIME_IF) >> PRECISION;
+    posVel.xy += (posVel.zw * FRAME_TIME_IF) >> PRECISION;
     if (abs(posVel.x) > HALF_WORLD_SIZE_IF.x) {
         posVel.z = -posVel.z;
     }

@@ -31,8 +31,8 @@ const int GRAVITY_IF = ${toIF(0)};
 const int FRICTION_IF = ${toIF(0.8)};
 const int ORTHO_BREAKING_DISTANCE_IF = ${toIF(BREAKING_DISTANCE)};
 const int DIAG_BRAKING_DISTANCE_IF = ${toIF(BREAKING_DISTANCE * Math.SQRT2)};
-const int SPRING_FACTOR_IF = ${toIF(0.4)};
-const int SPRING_FRICTION_IF = ${toIF(99)};
+const int SPRING_FACTOR_IF = ${toIF(1)};
+const int SPRING_FRICTION_IF = ${toIF(0)};
 
 ${require('./utils.glsl')}
 ${code}`;
