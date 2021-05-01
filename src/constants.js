@@ -1,7 +1,7 @@
 'use strict';
 
 const DATA_TEXTURE_WIDTH = 4096;
-const FRAME_TIME = 1000 / 60;
+const FRAME_TIME = 1000 / 120;
 const BREAKING_DISTANCE = 1.1;
 
 function generateConstantsAndUtils(code, canvas) {
@@ -21,8 +21,8 @@ const float GRAVITY = ${0.0}.0;
 const float COLLIDE_FRICTION = ${0.8};
 const float ORTHO_BREAKING_DISTANCE = ${BREAKING_DISTANCE};
 const float DIAG_BRAKING_DISTANCE = ${BREAKING_DISTANCE * Math.SQRT2};
-const float SPRING_FACTOR = ${0.0001};
-const float SPRING_FRICTION = ${0.01};
+const float SPRING_CONSTANT = ${0.0002};
+const float DAMPING_CONSTANT = ${0.02};
 
 ${require('./utils.glsl')}
 ${code}`;

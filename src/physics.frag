@@ -9,22 +9,18 @@ layout(location = 2) out uvec4 o_orthoConnections;
 layout(location = 3) out uvec4 o_diagConnections;
 
 
-uint connectionForce(inout vec2 force, inout vec2 otherVelocitySum, inout float otherVelocityCount, float connectionLength, vec4 thisPosVel, uint connection) {
+uint connectionForce(inout vec2 force, float connectionLength, vec4 thisPosVel, uint connection) {
     ivec2 connectionPos = idFromUint(connection);
     if (texelFetch(isActive, connectionPos, 0).x == 0u) {
         return 1u;
     }
     vec4 otherPosVel = texelFetch(posVel, connectionPos, 0);
     vec4 delta = otherPosVel - thisPosVel;
-    {
-        float length = length(delta.xy);
-        vec2 direction = delta.xy / length;
-        float forceMag = length - connectionLength;
-        forceMag = forceMag * SPRING_FACTOR;
-        force += forceMag * direction;
-    }
-    otherVelocitySum += otherPosVel.zw;
-    otherVelocityCount++;
+    float length = length(delta.xy);
+    vec2 direction = delta.xy / length;
+    float forceMag = length - connectionLength;
+    forceMag = forceMag * SPRING_CONSTANT + dot(delta.zw, direction) * DAMPING_CONSTANT;
+    force += forceMag * direction;
     return 1u;
 }
 
@@ -39,19 +35,14 @@ void main() {
     vec2 force = vec2(0, -GRAVITY);
     vec2 otherVelocitySum = vec2(0);
     float otherVelocityCount = 0.0;
-    isActive &= connectionForce(force, otherVelocitySum, otherVelocityCount, 2.0, posVel, orthoConnections.x);
-    isActive &= connectionForce(force, otherVelocitySum, otherVelocityCount, 2.0, posVel, orthoConnections.y);
-    isActive &= connectionForce(force, otherVelocitySum, otherVelocityCount, 2.0, posVel, orthoConnections.z);
-    isActive &= connectionForce(force, otherVelocitySum, otherVelocityCount, 2.0, posVel, orthoConnections.w);
-    isActive &= connectionForce(force, otherVelocitySum, otherVelocityCount, 2.82842712, posVel, orthoConnections.x);
-    isActive &= connectionForce(force, otherVelocitySum, otherVelocityCount, 2.82842712, posVel, orthoConnections.y);
-    isActive &= connectionForce(force, otherVelocitySum, otherVelocityCount, 2.82842712, posVel, orthoConnections.z);
-    isActive &= connectionForce(force, otherVelocitySum, otherVelocityCount, 2.82842712, posVel, orthoConnections.w);
-
-
-    vec2 otherVelocityAverage = otherVelocitySum / otherVelocityCount;
-
-    posVel.zw = posVel.zw * (1.0 - SPRING_FRICTION * otherVelocityCount) + otherVelocityAverage * SPRING_FRICTION * otherVelocityCount;
+    isActive &= connectionForce(force, 2.0, posVel, orthoConnections.x);
+    isActive &= connectionForce(force, 2.0, posVel, orthoConnections.y);
+    isActive &= connectionForce(force, 2.0, posVel, orthoConnections.z);
+    isActive &= connectionForce(force, 2.0, posVel, orthoConnections.w);
+    isActive &= connectionForce(force, 2.82842712, posVel, orthoConnections.x);
+    isActive &= connectionForce(force, 2.82842712, posVel, orthoConnections.y);
+    isActive &= connectionForce(force, 2.82842712, posVel, orthoConnections.z);
+    isActive &= connectionForce(force, 2.82842712, posVel, orthoConnections.w);
 
     posVel.zw += force * FRAME_TIME;
     posVel.xy += posVel.zw * FRAME_TIME;
