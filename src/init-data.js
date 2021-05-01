@@ -73,7 +73,7 @@ module.exports = function initData(b64src) {
                 if (get(x, y)) {
                     const i4 = id * 4;
                     res.isActive[id] = 1;
-                    res.posVel.set([(x - width / 2) << PRECISION, (y - height / 2) << PRECISION, 0, 0], i4);
+                    res.posVel.set([(x - width / 2) << PRECISION, (height / 2 - y) << PRECISION, 0, 0], i4);
                     {
                         const orthoConnections = [];
                         if (get(x - 1, y)) {
