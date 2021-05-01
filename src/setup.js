@@ -52,10 +52,12 @@ module.exports = (canvas) => {
         // Resolve Collisions First
 
         // Perform Softbody update and Physics
-        /*
+
         twgl.bindFramebufferInfo(gl, txfbWrite.framebuffer);
 
         gl.useProgram(physicsProgram.program);
+
+        gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1, gl.COLOR_ATTACHMENT2, gl.COLOR_ATTACHMENT3]);
 
         twgl.setUniformsAndBindTextures(physicsProgram, txfbRead.textures);
         twgl.setBuffersAndAttributes(gl, physicsProgram, physicsBufferInfo);
@@ -66,7 +68,7 @@ module.exports = (canvas) => {
             txfbWrite = txfbRead;
             txfbRead = temp;
         }
-        */
+
         // Perform Rendering
 
         twgl.bindFramebufferInfo(gl);
