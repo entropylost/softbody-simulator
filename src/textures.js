@@ -16,8 +16,8 @@ function particleTexturesAndFrameBuffer(gl, sources) {
             format: gl.RED_INTEGER,
         },
         posVel: {
-            internalFormat: gl.RGBA32I,
-            format: gl.RGBA_INTEGER,
+            internalFormat: gl.RGBA32F,
+            format: gl.RGBA,
         },
         orthoConnections: {
             internalFormat: gl.RGBA32UI,

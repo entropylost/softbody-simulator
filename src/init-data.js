@@ -1,7 +1,5 @@
 'use strict';
 
-const { PRECISION } = require('./constants');
-
 const BASE64_MARKER = ';base64,';
 
 function convertBase64ToBinary(dataURI) {
@@ -47,7 +45,7 @@ module.exports = function initData(b64src) {
     len++; // Zeroth element is special.
     const res = {
         isActive: new Uint8Array(len),
-        posVel: new Int32Array(len * 4),
+        posVel: new Float32Array(len * 4),
         orthoConnections: new Uint32Array(len * 4),
         diagConnections: new Uint32Array(len * 4),
     };
@@ -73,7 +71,7 @@ module.exports = function initData(b64src) {
                 if (get(x, y)) {
                     const i4 = id * 4;
                     res.isActive[id] = 1;
-                    res.posVel.set([(x - width / 2) << PRECISION, (y - height / 2) << PRECISION, 0, 0], i4);
+                    res.posVel.set([x - width / 2, y - height / 2, 0, 0], i4);
                     {
                         const orthoConnections = [];
                         if (get(x - 1, y)) {
