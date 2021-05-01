@@ -27,11 +27,12 @@ const int PRECISION = ${PRECISION};
 const int ONE_IF = ${1 << PRECISION};
 const int SQRT2_IF = ${toIF(Math.SQRT2)};
 const int FRAME_TIME_IF = ${toIF(FRAME_TIME)};
-const int GRAVITY_IF = ${toIF(80)};
+const int GRAVITY_IF = ${toIF(0)};
 const int FRICTION_IF = ${toIF(0.8)};
 const int ORTHO_BREAKING_DISTANCE_IF = ${toIF(BREAKING_DISTANCE)};
 const int DIAG_BRAKING_DISTANCE_IF = ${toIF(BREAKING_DISTANCE * Math.SQRT2)};
-const int SPRING_FACTOR_IF = ${toIF(-0.1)};
+const int SPRING_FACTOR_IF = ${toIF(0.4)};
+const int SPRING_FRICTION_IF = ${toIF(99)};
 
 ${require('./utils.glsl')}
 ${code}`;

@@ -8,24 +8,18 @@ layout(location = 1) out ivec4 o_posVel;
 layout(location = 2) out uvec4 o_orthoConnections;
 layout(location = 3) out uvec4 o_diagConnections;
 
-ivec2 lookupPosition(ivec2 connectionPos) {
-    return texelFetch(posVel, connectionPos, 0).xy;
-}
-uint lookupIsActive(ivec2 connectionPos) {
-    return texelFetch(isActive, connectionPos, 0).x;
-}
-
-ivec2 orthoForce(inout uint isActive, ivec2 pos, uint connection) {
+ivec2 orthoForce(inout uint thisIsActive, ivec4 thisPosVel, uint connection) {
     ivec2 connectionPos = idFromUint(connection);
-    if (lookupIsActive(connectionPos) == 0u) {
+    if (texelFetch(isActive, connectionPos, 0).x == 0u) {
         return ivec2(0);
     }
-    ivec2 otherPos = lookupPosition(connectionPos);
-    ivec2 delta = otherPos - pos;
+    ivec4 otherPosVel = texelFetch(posVel, connectionPos, 0);
+    ivec4 delta = otherPosVel - thisPosVel;
     int length = int(sqrt(float(delta.x * delta.x + delta.y * delta.y))); // Hack. Find better way to do this.
-    ivec2 direction = (delta << PRECISION) / length;
-    int force = length - ONE_IF;
+    ivec2 direction = (delta.xy << PRECISION) / length;
+    int force = length - ONE_IF * 2;
     force = (((((force * force) >> PRECISION) * force) >> PRECISION) * SPRING_FACTOR_IF) >> PRECISION;
+    // Figure out what to do with delta.zw
     return (force * direction) >> PRECISION;
 }
 
@@ -38,10 +32,10 @@ void main() {
     uvec4 diagConnections = texelFetch(diagConnections, idPos, 0);
 
     ivec2 force = ivec2(0, -GRAVITY_IF);
-    force += orthoForce(isActive, posVel.xy, orthoConnections.x);
-    force += orthoForce(isActive, posVel.xy, orthoConnections.y);
-    force += orthoForce(isActive, posVel.xy, orthoConnections.z);
-    force += orthoForce(isActive, posVel.xy, orthoConnections.w);
+    force += orthoForce(isActive, posVel, orthoConnections.x);
+    force += orthoForce(isActive, posVel, orthoConnections.y);
+    force += orthoForce(isActive, posVel, orthoConnections.z);
+    force += orthoForce(isActive, posVel, orthoConnections.w);
 
     posVel.zw += (force << PRECISION) / FRAME_TIME_IF;
     posVel.xy += (posVel.zw << PRECISION) / FRAME_TIME_IF;
