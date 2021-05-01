@@ -59,7 +59,7 @@ module.exports = function initData(b64src) {
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 if (get(x, y)) {
-                    idMap.set([x, y], id);
+                    idMap.set(JSON.stringify([x, y]), id);
                     id++;
                 }
             }
@@ -77,32 +77,32 @@ module.exports = function initData(b64src) {
                     {
                         const orthoConnections = [];
                         if (get(x - 1, y)) {
-                            orthoConnections.push(idMap.get(x - 1, y));
+                            orthoConnections.push(idMap.get(JSON.stringify([x - 1, y])));
                         }
                         if (get(x + 1, y)) {
-                            orthoConnections.push(idMap.get(x + 1, y));
+                            orthoConnections.push(idMap.get(JSON.stringify([x + 1, y])));
                         }
                         if (get(x, y - 1)) {
-                            orthoConnections.push(idMap.get(x, y - 1));
+                            orthoConnections.push(idMap.get(JSON.stringify([x, y - 1])));
                         }
                         if (get(x, y + 1)) {
-                            orthoConnections.push(idMap.get(x, y + 1));
+                            orthoConnections.push(idMap.get(JSON.stringify([x, y + 1])));
                         }
                         res.orthoConnections.set(orthoConnections, i4);
                     }
                     {
                         const diagConnections = [];
                         if (get(x - 1, y - 1)) {
-                            diagConnections.push(idMap.get(x - 1, y - 1));
+                            diagConnections.push(idMap.get(JSON.stringify([x - 1, y - 1])));
                         }
                         if (get(x + 1, y - 1)) {
-                            diagConnections.push(idMap.get(x + 1, y - 1));
+                            diagConnections.push(idMap.get(JSON.stringify([x + 1, y - 1])));
                         }
                         if (get(x - 1, y + 1)) {
-                            diagConnections.push(idMap.get(x - 1, y + 1));
+                            diagConnections.push(idMap.get(JSON.stringify([x - 1, y + 1])));
                         }
                         if (get(x + 1, y + 1)) {
-                            diagConnections.push(idMap.get(x + 1, y + 1));
+                            diagConnections.push(idMap.get(JSON.stringify([x + 1, y + 1])));
                         }
                         res.diagConnections.set(diagConnections, i4);
                     }

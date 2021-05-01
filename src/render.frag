@@ -2,7 +2,7 @@ flat in uint toKeep;
 
 out vec4 o_color;
 
-void main () {
+void main() {
     if (toKeep == 0u) {
         discard;
     }

@@ -6,7 +6,7 @@ uniform usampler2D diagConnections;
 in float unused;
 flat out uint toKeep;
 
-void main () {
+void main() {
     ivec2 idPos = idFromInt(gl_VertexID);
     ivec2 pos = texelFetch(posVel, idPos, 0).xy;
     toKeep = texelFetch(isActive, idPos, 0).x;
