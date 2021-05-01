@@ -20,18 +20,11 @@ uint orthoForce(inout vec2 force, vec4 thisPosVel, uint connection) {
         float length = length(delta.xy);
         vec2 direction = delta.xy / length;
         float forceMag = length - 2.0;
-        forceMag = forceMag * forceMag * forceMag * SPRING_FACTOR;
+        forceMag = forceMag * SPRING_FACTOR;
         force += forceMag * direction;
     }
     {
-        float length = length(delta.zw);
-        if (length == 0.0) {
-            return 1u;
-        }
-        vec2 direction = delta.zw / length;
-        float forceMag = length;
-        forceMag = forceMag * SPRING_FRICTION;
-        force += forceMag * direction;
+        force += SPRING_FRICTION * delta.zw;
     }
     return 1u;
 }
