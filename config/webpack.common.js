@@ -3,14 +3,11 @@
 const paths = require('./paths');
 const path = require('path');
 
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackBar = require('webpackbar');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const plugins = [
-    // Removes/cleans build folders and unused assets when rebuilding
-    new CleanWebpackPlugin(),
     // Generates an HTML file from a template
     new HtmlWebpackPlugin({
         title: 'softbody-simulator',

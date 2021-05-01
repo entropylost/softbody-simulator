@@ -5,11 +5,10 @@
     "license": "ISC",
     "scripts": {
         "serve": "cross-env NODE_ENV=development WEBPACK_ANALYZE_SIZE=true webpack serve --config config/webpack.dev.js",
-        "build": "cross-env NODE_ENV=production WEBPACK_ANALYZE_SIZE=true webpack --config config/webpack.prod.js",
+        "build": "cross-env NODE_ENV=production WEBPACK_ANALYZE_SIZE=true webpack --config config/webpack.prod.js && cd dist && git add . && git commit -m \"Updated Pages\" && git push",
         "action-build": "cross-env NODE_ENV=production webpack --config config/webpack.prod.js"
     },
     "devDependencies": {
-        "clean-webpack-plugin": "^3.0.0",
         "cross-env": "^7.0.3",
         "css-loader": "^5.2.4",
         "css-minimizer-webpack-plugin": "^2.0.0",

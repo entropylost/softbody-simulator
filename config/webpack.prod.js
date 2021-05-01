@@ -23,6 +23,15 @@ module.exports = merge(common, {
             filename: 'styles/[name].[contenthash].css',
             chunkFilename: '[id].css',
         }),
+        {
+            apply: (compiler) => {
+                compiler.hooks.done.tap('ExitPlugin', () => {
+                    setTimeout(() => {
+                        process.exit(0);
+                    });
+                });
+            },
+        },
     ],
     optimization: {
         minimize: true,
