@@ -12,7 +12,14 @@ void main () {
     ivec2 idPos = ivec2(gl_FragCoord.xy - vec2(0.5));
     o_isActive = texelFetch(isActive, idPos, 0).x;
     ivec4 posVel = texelFetch(posVel, idPos, 0);
-    posVel.x += 1 << PRECISION;
+    posVel.zw += (ivec2(0, -GRAVITY) << PRECISION) / FRAME_TIME;
+    posVel.xy += (posVel.zw << PRECISION) / FRAME_TIME;
+    if (abs(posVel.x) > HALF_WORLD_SIZE_I.x) {
+        posVel.z = -posVel.z;
+    }
+    if (abs(posVel.y) > HALF_WORLD_SIZE_I.y) {
+        posVel.w = -posVel.w;
+    }
     o_posVel = posVel;
     o_orthoConnections = texelFetch(orthoConnections, idPos, 0);
     o_diagConnections = texelFetch(diagConnections, idPos, 0);
