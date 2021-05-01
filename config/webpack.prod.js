@@ -13,7 +13,7 @@ module.exports = merge(common, {
     devtool: false,
     output: {
         path: paths.build,
-        publicPath: '/',
+        publicPath: '/softbody-simulator/',
         filename: 'js/[name].[contenthash].bundle.js',
     },
     plugins: [
