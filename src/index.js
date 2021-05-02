@@ -23,7 +23,7 @@ const root = mod('root', (css, use, $) => {
             requestAnimationFrame(function run() {
                 const currentTime = performance.now() - startTime;
                 const frameCount = Math.floor((currentTime - lastFrameTime) / FRAME_TIME);
-                if (frameCount > 8) throw new Error('Unable to keep up!');
+                if (frameCount > 50) throw new Error('Unable to keep up!');
                 for (let i = 0; i < frameCount; i++) {
                     console.log('Updating');
                     update();
