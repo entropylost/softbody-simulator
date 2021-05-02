@@ -22,7 +22,7 @@ const float COLLIDE_FRICTION = ${0.0}.0;
 const float ORTHO_BREAKING_DISTANCE = ${BREAKING_DISTANCE};
 const float DIAG_BRAKING_DISTANCE = ${BREAKING_DISTANCE * Math.SQRT2};
 const float SPRING_CONSTANT = ${0.04};
-const float DAMPING_CONSTANT = ${0.1};
+const float DAMPING_CONSTANT = ${0.03};
 
 ${require('./utils.glsl')}
 ${code}`;

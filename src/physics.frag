@@ -18,7 +18,9 @@ uint connectionForce(inout vec2 force, float connectionLength, vec4 thisPosVel, 
     vec4 delta = otherPosVel - thisPosVel;
     float length = length(delta.xy);
     vec2 direction = delta.xy / length;
-    float forceMag = (length - connectionLength) * SPRING_CONSTANT + dot(delta.zw, direction) * DAMPING_CONSTANT;
+    float lengthRatioSq = length / connectionLength;
+    lengthRatioSq *= lengthRatioSq;
+    float forceMag = (lengthRatioSq - 1.0 / lengthRatioSq) * SPRING_CONSTANT + dot(delta.zw, direction) * DAMPING_CONSTANT;
     force += forceMag * direction;
     return 1u;
 }
