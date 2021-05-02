@@ -36,10 +36,10 @@ void main() {
     isActive &= connectionForce(force, 1.0, posVel, orthoConnections.y);
     isActive &= connectionForce(force, 1.0, posVel, orthoConnections.z);
     isActive &= connectionForce(force, 1.0, posVel, orthoConnections.w);
-    isActive &= connectionForce(force, 1.41421356, posVel, orthoConnections.x);
-    isActive &= connectionForce(force, 1.41421356, posVel, orthoConnections.y);
-    isActive &= connectionForce(force, 1.41421356, posVel, orthoConnections.z);
-    isActive &= connectionForce(force, 1.41421356, posVel, orthoConnections.w);
+    isActive &= connectionForce(force, 1.41421356, posVel, diagConnections.x);
+    isActive &= connectionForce(force, 1.41421356, posVel, diagConnections.y);
+    isActive &= connectionForce(force, 1.41421356, posVel, diagConnections.z);
+    isActive &= connectionForce(force, 1.41421356, posVel, diagConnections.w);
 
     posVel.zw += force * FRAME_TIME;
     posVel.xy += posVel.zw * FRAME_TIME;
