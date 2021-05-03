@@ -2,7 +2,7 @@
 
 const DATA_TEXTURE_WIDTH = 4096;
 const FRAME_TIME = 1000 / 600;
-const BREAKING_DISTANCE = 1.01;
+const BREAKING_DISTANCE = 1.02;
 
 function generateConstantsAndUtils(code, canvas) {
     return `#version 300 es
