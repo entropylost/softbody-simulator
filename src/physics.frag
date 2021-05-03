@@ -12,7 +12,7 @@ layout(location = 3) out uvec4 o_diagConnections;
 uint connectionForce(inout vec2 force, float connectionLength, vec4 thisPosVel, uint connection) {
     ivec2 connectionPos = idFromUint(connection);
     if (texelFetch(isActive, connectionPos, 0).x == 0u) {
-        return 1u;
+        return connection;
     }
     vec4 otherPosVel = texelFetch(posVel, connectionPos, 0);
     vec4 delta = otherPosVel - thisPosVel;
@@ -22,7 +22,7 @@ uint connectionForce(inout vec2 force, float connectionLength, vec4 thisPosVel, 
     lengthRatioSq *= lengthRatioSq;
     float forceMag = (lengthRatioSq - 1.0 / lengthRatioSq) * SPRING_CONSTANT + dot(delta.zw, direction) * DAMPING_CONSTANT;
     force += forceMag * direction;
-    return 1u;
+    return length >= BREAKING_DISTANCE * connectionLength ? 0u : connection;
 }
 
 void main() {
@@ -34,14 +34,14 @@ void main() {
     uvec4 diagConnections = texelFetch(diagConnections, idPos, 0);
 
     vec2 force = vec2(0, -GRAVITY);
-    isActive &= connectionForce(force, 1.0, posVel, orthoConnections.x);
-    isActive &= connectionForce(force, 1.0, posVel, orthoConnections.y);
-    isActive &= connectionForce(force, 1.0, posVel, orthoConnections.z);
-    isActive &= connectionForce(force, 1.0, posVel, orthoConnections.w);
-    isActive &= connectionForce(force, 1.41421356, posVel, diagConnections.x);
-    isActive &= connectionForce(force, 1.41421356, posVel, diagConnections.y);
-    isActive &= connectionForce(force, 1.41421356, posVel, diagConnections.z);
-    isActive &= connectionForce(force, 1.41421356, posVel, diagConnections.w);
+    orthoConnections.x &= connectionForce(force, 1.0, posVel, orthoConnections.x);
+    orthoConnections.y &= connectionForce(force, 1.0, posVel, orthoConnections.y);
+    orthoConnections.z &= connectionForce(force, 1.0, posVel, orthoConnections.z);
+    orthoConnections.w &= connectionForce(force, 1.0, posVel, orthoConnections.w);
+    diagConnections.x &= connectionForce(force, 1.41421356, posVel, diagConnections.x);
+    diagConnections.y &= connectionForce(force, 1.41421356, posVel, diagConnections.y);
+    diagConnections.z &= connectionForce(force, 1.41421356, posVel, diagConnections.z);
+    diagConnections.w &= connectionForce(force, 1.41421356, posVel, diagConnections.w);
 
     posVel.zw += force * FRAME_TIME;
     posVel.xy += posVel.zw * FRAME_TIME;
