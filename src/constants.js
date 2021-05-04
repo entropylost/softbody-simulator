@@ -2,7 +2,6 @@
 
 const DATA_TEXTURE_WIDTH = 4096;
 const FRAME_TIME = 1000 / 600;
-const BREAKING_DISTANCE = 1.02;
 
 function generateConstantsAndUtils(code, canvas) {
     return `#version 300 es
@@ -19,7 +18,7 @@ const vec2 HALF_WORLD_SIZE = vec2(${canvas.width / 2}.0, ${canvas.height / 2}.0)
 const float FRAME_TIME = ${FRAME_TIME};
 const float GRAVITY = ${0.000002};
 const float COLLIDE_FRICTION = ${0.4};
-const float BREAKING_DISTANCE = ${BREAKING_DISTANCE};
+const float BREAKING_DISTANCE = ${1.02};
 const float SPRING_CONSTANT = ${0.04};
 const float DAMPING_CONSTANT = ${0.03};
 

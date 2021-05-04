@@ -27,10 +27,10 @@ module.exports = function initData(b64src) {
         if (x <= 0 || y <= 0 || x >= width || y >= height) {
             return false;
         }
-        if (data[x + (height - y) * width] === 1) {
-            return true;
-        } else {
+        if (data[x + (height - y) * width] === 0) {
             return false;
+        } else {
+            return true;
         }
     }
 

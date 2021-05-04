@@ -1,3 +1,4 @@
+use image::Rgb;
 use std::io::Write;
 use std::fs::File;
 use image::io::Reader;
@@ -7,6 +8,26 @@ use anyhow::Result;
 struct Size {
     width: u32,
     height: u32,
+}
+
+#[repr(u8)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+enum ParticleType {
+    Nothing = 0,
+    Normal = 1,
+    Fixed = 2,
+    NoCollision = 3,
+}
+
+fn from_color(c: Rgb<u8>) -> ParticleType {
+    let c = c.0;
+    match c {
+        [0, 0, 0] => ParticleType::Nothing,
+        [255, 255, 255] => ParticleType::Normal,
+        [255, 0, 0] => ParticleType::Fixed,
+        [0, 0, 255] => ParticleType::NoCollision,
+        _ => panic!("Invalid pixel color: {:?}", c),
+    }
 }
 
 fn main() -> Result<()> {
@@ -27,25 +48,13 @@ The image should consist of only white and black pixels.
             height: image.height(),
         }).iter().cloned());
     }
-    for p in image.pixels() {
-        let p = p.0;
-        if p[0] != p[1] || p[1] != p[2] || p[2] != p[0] {
-            println!("Pixel colors are not equal.");
-            return Ok(());
-        }
-        let p = p[0];
-        if p != 255 && p != 0 {
-            println!("Pixel is not fully white or fully black.");
-            return Ok(());
-        }
-        if p == 255 {
-            output.push(1);
-        } else {
-            output.push(0);
-        }
+    for c in image.pixels() {
+        output.push(from_color(*c) as u8);
     }
 
     File::create(&args[2])?.write_all(&output)?;
+
+    println!("Successfully written map to `{}`.", args[2]);
 
     Ok(())
 }
