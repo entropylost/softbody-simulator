@@ -1,4 +1,4 @@
-uniform usampler2D isActive;
+uniform usampler2D type;
 uniform sampler2D posVel;
 uniform usampler2D orthoConnections;
 uniform usampler2D diagConnections;

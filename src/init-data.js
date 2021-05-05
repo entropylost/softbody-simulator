@@ -25,26 +25,22 @@ module.exports = function initData(b64src) {
 
     function get(x, y) {
         if (x <= 0 || y <= 0 || x >= width || y >= height) {
-            return false;
+            return 0;
         }
-        if (data[x + (height - y) * width] === 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return data[x + (height - y) * width];
     }
 
     let len = 0;
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
-            if (get(x, y)) {
+            if (get(x, y) !== 0) {
                 len++;
             }
         }
     }
     len++; // Zeroth element is special.
     const res = {
-        isActive: new Uint8Array(len),
+        type: new Uint8Array(len),
         posVel: new Float32Array(len * 4),
         orthoConnections: new Uint32Array(len * 4),
         diagConnections: new Uint32Array(len * 4),
@@ -68,38 +64,39 @@ module.exports = function initData(b64src) {
         let id = 1;
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
-                if (get(x, y)) {
+                const value = get(x, y);
+                if (value !== 0) {
                     const i4 = id * 4;
-                    res.isActive[id] = 1;
+                    res.type[id] = value;
                     res.posVel.set([x - width / 2, y - height / 2, 0, 0], i4);
                     {
                         const orthoConnections = [];
-                        if (get(x - 1, y)) {
+                        if (get(x - 1, y) !== 0) {
                             orthoConnections.push(idMap.get(JSON.stringify([x - 1, y])));
                         }
-                        if (get(x + 1, y)) {
+                        if (get(x + 1, y) !== 0) {
                             orthoConnections.push(idMap.get(JSON.stringify([x + 1, y])));
                         }
-                        if (get(x, y - 1)) {
+                        if (get(x, y - 1) !== 0) {
                             orthoConnections.push(idMap.get(JSON.stringify([x, y - 1])));
                         }
-                        if (get(x, y + 1)) {
+                        if (get(x, y + 1) !== 0) {
                             orthoConnections.push(idMap.get(JSON.stringify([x, y + 1])));
                         }
                         res.orthoConnections.set(orthoConnections, i4);
                     }
                     {
                         const diagConnections = [];
-                        if (get(x - 1, y - 1)) {
+                        if (get(x - 1, y - 1) !== 0) {
                             diagConnections.push(idMap.get(JSON.stringify([x - 1, y - 1])));
                         }
-                        if (get(x + 1, y - 1)) {
+                        if (get(x + 1, y - 1) !== 0) {
                             diagConnections.push(idMap.get(JSON.stringify([x + 1, y - 1])));
                         }
-                        if (get(x - 1, y + 1)) {
+                        if (get(x - 1, y + 1) !== 0) {
                             diagConnections.push(idMap.get(JSON.stringify([x - 1, y + 1])));
                         }
-                        if (get(x + 1, y + 1)) {
+                        if (get(x + 1, y + 1) !== 0) {
                             diagConnections.push(idMap.get(JSON.stringify([x + 1, y + 1])));
                         }
                         res.diagConnections.set(diagConnections, i4);

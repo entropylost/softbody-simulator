@@ -5,13 +5,13 @@ const { DATA_TEXTURE_WIDTH } = require('./constants');
 
 function particleTexturesAndFrameBuffer(gl, sources) {
     const sizes = {
-        isActive: 1,
+        type: 1,
         posVel: 4,
         orthoConnections: 4,
         diagConnections: 4,
     };
     const specification = Object.entries({
-        isActive: {
+        type: {
             internalFormat: gl.R8UI,
             format: gl.RED_INTEGER,
         },
@@ -45,7 +45,7 @@ function particleTexturesAndFrameBuffer(gl, sources) {
         return a;
     }, {});
 
-    const height = specification.isActive.height;
+    const height = specification.type.height;
 
     Object.values(specification).forEach((a) => {
         if (a.height !== height) {
@@ -57,7 +57,7 @@ function particleTexturesAndFrameBuffer(gl, sources) {
     const framebuffer = twgl.createFramebufferInfo(
         gl,
         [
-            { attachment: textures.isActive },
+            { attachment: textures.type },
             { attachment: textures.posVel },
             { attachment: textures.orthoConnections },
             { attachment: textures.diagConnections },

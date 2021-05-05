@@ -6,5 +6,6 @@ module.exports = {
         'rule-empty-line-before': null,
         'max-nesting-depth': 2,
         'selector-max-compound-selectors': null,
+        'selector-max-id': 1,
     },
 };

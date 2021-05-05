@@ -18,9 +18,14 @@ const root = mod('root', (css, use, $) => {
             requestAnimationFrame(function run() {
                 const currentTime = performance.now() - startTime;
                 const frameCount = Math.floor((currentTime - lastFrameTime) / FRAME_TIME);
-                if (frameCount > 50) throw new Error('Unable to keep up!');
+                console.log(frameCount);
+                if (frameCount >= 50) {
+                    console.log('Unable to keep up! Skipping frame.');
+                    lastFrameTime = Math.floor(currentTime / FRAME_TIME) * FRAME_TIME;
+                    requestAnimationFrame(run);
+                    return;
+                }
                 for (let i = 0; i < frameCount; i++) {
-                    console.log('Updating');
                     update();
                 }
                 lastFrameTime = Math.floor(currentTime / FRAME_TIME) * FRAME_TIME;
