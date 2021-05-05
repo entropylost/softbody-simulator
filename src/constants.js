@@ -21,7 +21,7 @@ const float COLLIDE_FRICTION = ${0.4};
 const float BREAKING_DISTANCE = ${1.02};
 const float SPRING_CONSTANT = ${0.04};
 const float DAMPING_CONSTANT = ${0.03};
-const float AIR_FRICTION = ${0.0}.0;
+const float AIR_FRICTION = ${0.0001};
 
 ${require('./utils.glsl')}
 ${code}`;
