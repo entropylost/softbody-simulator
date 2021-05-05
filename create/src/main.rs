@@ -1,22 +1,14 @@
-use image::Rgb;
-use std::io::Write;
-use std::fs::File;
-use image::io::Reader;
 use anyhow::Result;
+use cpu::ParticleType;
+use image::io::Reader;
+use image::Rgb;
+use std::fs::File;
+use std::io::Write;
 
 #[repr(C)]
 struct Size {
     width: u32,
     height: u32,
-}
-
-#[repr(u8)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-enum ParticleType {
-    Nothing = 0,
-    Normal = 1,
-    Fixed = 2,
-    NoCollision = 3,
 }
 
 fn from_color(c: Rgb<u8>) -> ParticleType {
@@ -33,20 +25,26 @@ fn from_color(c: Rgb<u8>) -> ParticleType {
 fn main() -> Result<()> {
     let args = std::env::args().collect::<Vec<String>>();
     if args.len() != 3 {
-        println!("Invalid number of arguments.
+        println!(
+            "Invalid number of arguments.
 Usage:
 > create /path/to/image.png /path/to/out.map
 
 The image should consist of only white and black pixels.
-");
+"
+        );
     }
     let image = Reader::open(&args[1])?.decode()?.to_rgb8();
     let mut output = Vec::<u8>::new();
     unsafe {
-        output.extend(std::mem::transmute::<_, [u8; 8]>(Size {
-            width: image.width(),
-            height: image.height(),
-        }).iter().cloned());
+        output.extend(
+            std::mem::transmute::<_, [u8; 8]>(Size {
+                width: image.width(),
+                height: image.height(),
+            })
+            .iter()
+            .cloned(),
+        );
     }
     for c in image.pixels() {
         output.push(from_color(*c) as u8);

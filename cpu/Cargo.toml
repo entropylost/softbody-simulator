@@ -1,5 +1,5 @@
 [package]
-name = "create"
+name = "cpu"
 version = "0.1.0"
 authors = ["iMplode nZ <rg@youxplode.com>"]
 edition = "2018"
@@ -7,6 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-image = "0.23.14"
-anyhow = "1.0.40"
-cpu = { path = "../cpu/" }
+console = "0.14.1"
+nalgebra = "0.26.1"
+multimap = "0.8.3"
+array2d = "0.2.1"
+arrayvec = "0.7.0"
