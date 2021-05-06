@@ -1,12 +1,16 @@
-use std::collections::HashMap;
 use array2d::Array2D;
 use arrayvec::ArrayVec;
 use multimap::MultiMap;
 use na::Vector2;
 use nalgebra as na;
+use std::collections::HashMap;
 use std::convert::TryInto;
+use std::f32::consts::SQRT_2;
 use std::ops::Deref;
 use std::path::Path;
+
+mod constants;
+use constants::*;
 
 #[repr(u8)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -25,11 +29,11 @@ impl Default for ParticleType {
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct Particle {
-    pt: ParticleType,
+    ty: ParticleType,
     position: Vector2<f32>,
     velocity: Vector2<f32>,
-    ortho_connections: [u32; 4],
-    diag_connections: [u32; 4],
+    ortho_connections: [usize; 4],
+    diag_connections: [usize; 4],
 }
 
 #[derive(Clone, Debug)]
@@ -124,7 +128,7 @@ impl World {
                 if pt == ParticleType::Nothing {
                     return;
                 }
-                let attempt_connect = |connections: &mut ArrayVec<u32, 4>, dx: i32, dy: i32| {
+                let attempt_connect = |connections: &mut ArrayVec<usize, 4>, dx: i32, dy: i32| {
                     let id = id_map.get(&(pos + Vector2::new(dx, dy)));
                     if let Some(id) = id {
                         connections.push(*id);
@@ -151,7 +155,7 @@ impl World {
                     connections.deref().try_into().unwrap()
                 };
                 world.particles[particle_id] = Particle {
-                    pt,
+                    ty: pt,
                     position: pos.cast(),
                     velocity: Vector2::zeros(),
                     ortho_connections,
@@ -162,4 +166,71 @@ impl World {
         }
         world
     }
+
+    pub fn physics_update(&mut self) {
+        self.particles = self
+            .particles
+            .iter()
+            .map(|p| {
+                let mut p = *p;
+                let connection_force = |connection: &mut usize,
+                                        connection_length: f32,
+                                        position: Vector2<f32>,
+                                        velocity: Vector2<f32>|
+                 -> Vector2<f32> {
+                    let other_particle = self.particles[*connection];
+                    if other_particle.ty == ParticleType::Nothing {
+                        return Vector2::zeros();
+                    }
+                    let Particle {
+                        position: other_position,
+                        velocity: other_velocity,
+                        ..
+                    } = other_particle;
+                    let delta_position = other_position - position;
+                    let delta_velocity = other_velocity - velocity;
+                    let length = delta_position.magnitude();
+                    let direction = delta_position / length;
+                    let mut length_ratio_sq = length / connection_length;
+                    length_ratio_sq *= length_ratio_sq;
+                    let force_mag = (length_ratio_sq - 1.0 / length_ratio_sq) * SPRING_CONSTANT
+                        + delta_velocity.dot(&direction) * DAMPING_CONSTANT;
+                    if length >= BREAKING_DISTANCE * connection_length {
+                        *connection = 0;
+                    }
+                    return force_mag * direction;
+                };
+                let mut force = Vector2::new(0.0, -GRAVITY);
+                force -= p.velocity * AIR_FRICTION;
+                force += connection_force(&mut p.ortho_connections[0], 1.0, p.position, p.velocity);
+                force += connection_force(&mut p.ortho_connections[1], 1.0, p.position, p.velocity);
+                force += connection_force(&mut p.ortho_connections[2], 1.0, p.position, p.velocity);
+                force += connection_force(&mut p.ortho_connections[3], 1.0, p.position, p.velocity);
+                force +=
+                    connection_force(&mut p.diag_connections[0], SQRT_2, p.position, p.velocity);
+                force +=
+                    connection_force(&mut p.diag_connections[1], SQRT_2, p.position, p.velocity);
+                force +=
+                    connection_force(&mut p.diag_connections[2], SQRT_2, p.position, p.velocity);
+                force +=
+                    connection_force(&mut p.diag_connections[3], SQRT_2, p.position, p.velocity);
+                if p.ty != ParticleType::Fixed {
+                    p.velocity += force * FRAME_TIME;
+                    p.position += p.velocity * FRAME_TIME;
+                }
+                if p.position.x.abs() > self.half_size.x {
+                    p.velocity.x *= WORLD_COLLISION_RESPONSE;
+                }
+                if p.position.y.abs() > self.half_size.y {
+                    p.velocity.y *= WORLD_COLLISION_RESPONSE;
+                }
+                p
+            })
+            .collect();
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Simulation {
+    pub world: World,
 }

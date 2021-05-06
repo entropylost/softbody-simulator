@@ -8,7 +8,7 @@ layout(location = 1) out vec4 o_posVel;
 layout(location = 2) out uvec4 o_orthoConnections;
 layout(location = 3) out uvec4 o_diagConnections;
 
-
+// TODO: Make force the return value and mutate connection.
 uint connectionForce(inout vec2 force, const float connectionLength, vec4 thisPosVel, uint connection) {
     ivec2 connectionPos = idFromUint(connection);
     if (texelFetch(type, connectionPos, 0).x == 0u) {
@@ -49,6 +49,7 @@ void main() {
         posVel.xy += posVel.zw * FRAME_TIME;
     }
     if (abs(posVel.x) > HALF_WORLD_SIZE.x) {
+        // TODO: Replace with multiplication.
         posVel.z = -posVel.z * COLLIDE_FRICTION;
     }
     if (abs(posVel.y) > HALF_WORLD_SIZE.y) {
