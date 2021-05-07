@@ -40,7 +40,7 @@ pub struct Particle {
 pub struct Map {
     size: Vector2<u32>,
     pub half_size: Vector2<i32>,
-    elements: Array2D<ParticleType>,
+    pub elements: Array2D<ParticleType>,
 }
 impl Map {
     pub fn from_file(file: impl AsRef<Path>) -> Self {
@@ -52,7 +52,7 @@ impl Map {
             let u32bytes = std::mem::transmute::<_, &[u32]>(&bytevec[..]);
             Vector2::new(u32bytes[0], u32bytes[1])
         };
-        let elements = Array2D::from_row_major(
+        let elements = Array2D::from_column_major(
             unsafe { std::mem::transmute(&bytevec[8..]) },
             size.x as usize,
             size.y as usize,
@@ -73,10 +73,7 @@ impl Map {
         {
             return ParticleType::Nothing;
         }
-        return self.elements[(
-            position.x as usize,
-            (self.size.y - 1 - position.y as u32) as usize,
-        )];
+        return self.elements[(position.x as usize, position.y as usize)];
     }
     pub fn num_particles(&self) -> u32 {
         let mut num_particles = 0;
@@ -228,9 +225,53 @@ impl World {
             })
             .collect();
     }
-}
 
-#[derive(Clone, Debug)]
-pub struct Simulation {
-    pub world: World,
+    pub fn update_pixels(&mut self) {
+        self.particles_per_pixel.clear();
+        for p in &self.particles {
+            if p.position.x.abs() > self.half_size.x || p.position.y.abs() > self.half_size.y {
+                continue;
+            }
+            self.particles_per_pixel
+                .insert(Vector2::new(p.position.x as i32, p.position.y as i32), *p);
+        }
+    }
+
+    pub fn ascii_render(&self, pixel_size: Vector2<i32>) -> String {
+        let pixel_volume = pixel_size.x * pixel_size.y;
+        let mut res = String::new();
+        for y in (-self.half_size.y as i32 / pixel_size.y)..(self.half_size.y as i32 / pixel_size.y)
+        {
+            for x in
+                (-self.half_size.x as i32 / pixel_size.x)..(self.half_size.x as i32 / pixel_size.x)
+            {
+                let mut particle_count = 0;
+                for i in 0..pixel_size.x {
+                    for j in 0..pixel_size.y {
+                        let pos = Vector2::new(x * pixel_size.x + i, y * pixel_size.y + j);
+                        if self.particles_per_pixel.contains_key(&pos) {
+                            particle_count += 1;
+                        }
+                    }
+                }
+                let density = particle_count as f32 / pixel_volume as f32;
+                let mut fill = ' ';
+                if density > 0.0 {
+                    fill = '░';
+                }
+                if density > 0.25 {
+                    fill = '▒';
+                }
+                if density > 0.5 {
+                    fill = '▓';
+                }
+                if density > 0.75 {
+                    fill = '█';
+                }
+                res.push(fill);
+            }
+            res.push('\n');
+        }
+        res
+    }
 }
