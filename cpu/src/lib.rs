@@ -73,7 +73,10 @@ impl Map {
         {
             return ParticleType::Nothing;
         }
-        return self.elements[(position.x as usize, position.y as usize)];
+        return self.elements[(
+            position.x as usize,
+            (self.size.y - 1 - position.y as u32) as usize,
+        )];
     }
     pub fn num_particles(&self) -> u32 {
         let mut num_particles = 0;
@@ -240,7 +243,9 @@ impl World {
     pub fn ascii_render(&self, pixel_size: Vector2<i32>) -> String {
         let pixel_volume = pixel_size.x * pixel_size.y;
         let mut res = String::new();
-        for y in (-self.half_size.y as i32 / pixel_size.y)..(self.half_size.y as i32 / pixel_size.y)
+        for y in ((-self.half_size.y as i32 / pixel_size.y)
+            ..(self.half_size.y as i32 / pixel_size.y))
+            .rev()
         {
             for x in
                 (-self.half_size.x as i32 / pixel_size.x)..(self.half_size.x as i32 / pixel_size.x)
