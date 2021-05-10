@@ -232,6 +232,9 @@ impl World {
     pub fn update_pixels(&mut self) {
         self.particles_per_pixel.clear();
         for p in &self.particles {
+            if p.ty == ParticleType::Nothing {
+                continue;
+            }
             if p.position.x.abs() > self.half_size.x || p.position.y.abs() > self.half_size.y {
                 continue;
             }

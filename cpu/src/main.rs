@@ -3,8 +3,6 @@ use cpu::constants::{FRAME_TIME, NUM_FRAMES_PER_FULL_UPDATE};
 use cpu::*;
 use nalgebra::Vector2;
 
-// TODO: FIGURE OUT WHY THERE'S A PARTICLE AT THE CENTER (USE start-collision OR start-2 MAPS).
-
 fn main() {
     let map = Map::from_file("../assets/start-collision.map");
     let mut world = World::new(&map);
