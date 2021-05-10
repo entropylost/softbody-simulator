@@ -99,6 +99,7 @@ dependencies = [
  "array2d",
  "arrayvec",
  "console",
+ "image",
  "multimap",
  "nalgebra",
 ]

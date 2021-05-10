@@ -1,5 +1,7 @@
 use array2d::Array2D;
 use arrayvec::ArrayVec;
+use image::Rgb;
+use image::RgbImage;
 use multimap::MultiMap;
 use na::Vector2;
 use nalgebra as na;
@@ -289,8 +291,8 @@ impl World {
                 for i in 0..pixel_size.x {
                     for j in 0..pixel_size.y {
                         let pos = Vector2::new(x * pixel_size.x + i, y * pixel_size.y + j);
-                        if self.particles_per_pixel.contains_key(&pos) {
-                            particle_count += 1;
+                        if let Some(particles) = self.particles_per_pixel.get_vec(&pos) {
+                            particle_count += particles.len();
                         }
                     }
                 }
@@ -313,5 +315,24 @@ impl World {
             res.push('\n');
         }
         res
+    }
+
+    pub fn image_render(&self, path: impl AsRef<Path>) {
+        let mut img = RgbImage::new(self.half_size.x as u32 * 2, self.half_size.y as u32 * 2);
+        for x in -self.half_size.x as i32..self.half_size.x as i32 {
+            for y in -self.half_size.y as i32..self.half_size.y as i32 {
+                let color = if self.particles_per_pixel.contains_key(&Vector2::new(x, y)) {
+                    Rgb([255, 255, 255])
+                } else {
+                    Rgb([0, 0, 0])
+                };
+                img.put_pixel(
+                    x as u32 + self.half_size.x as u32,
+                    self.half_size.y as u32 - 1 - y as u32,
+                    color,
+                );
+            }
+        }
+        img.save(path).unwrap();
     }
 }
