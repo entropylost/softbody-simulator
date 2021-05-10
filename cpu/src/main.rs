@@ -13,8 +13,9 @@ fn main() {
             frames += NUM_FRAMES_PER_FULL_UPDATE;
             world.full_update();
         }
-        term.clear_screen().unwrap();
+        term.move_cursor_to(0, 0).unwrap();
         println!("{}", world.ascii_render(Vector2::new(4, 8)));
+        term.clear_to_end_of_screen().unwrap();
         println!("Time: {}", frames as f32 * FRAME_TIME / 1000.0);
     }
 }
