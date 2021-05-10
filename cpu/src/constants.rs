@@ -5,3 +5,6 @@ pub const BREAKING_DISTANCE: f32 = 1.02;
 pub const SPRING_CONSTANT: f32 = 0.04;
 pub const DAMPING_CONSTANT: f32 = 0.03;
 pub const AIR_FRICTION: f32 = 0.0001;
+pub const PARTICLE_RADIUS: f32 = 0.4;
+pub const COLLISION_RESPONSE: f32 = 0.01;
+pub const NUM_FRAMES_PER_FULL_UPDATE: u32 = 10;

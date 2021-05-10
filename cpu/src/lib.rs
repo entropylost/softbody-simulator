@@ -9,7 +9,7 @@ use std::f32::consts::SQRT_2;
 use std::ops::Deref;
 use std::path::Path;
 
-mod constants;
+pub mod constants;
 use constants::*;
 
 #[repr(u8)]
@@ -167,7 +167,7 @@ impl World {
         world
     }
 
-    pub fn physics_update(&mut self) {
+    pub fn update_physics(&mut self) {
         self.particles = self
             .particles
             .iter()
@@ -238,6 +238,38 @@ impl World {
             self.particles_per_pixel
                 .insert(Vector2::new(p.position.x as i32, p.position.y as i32), *p);
         }
+    }
+
+    pub fn update_collision(&mut self) {
+        for p in &mut self.particles {
+            let pixel = Vector2::new(p.position.x as i32, p.position.y as i32);
+            let mut apply_collision = |p2: Particle| {
+                if (p.position - p2.position).magnitude() <= 2.0 * PARTICLE_RADIUS {
+                    p.velocity += (p.position - p2.position) * COLLISION_RESPONSE;
+                }
+            };
+            let offset = [-1, 0, 1];
+            for dx in offset.iter() {
+                for dy in offset.iter() {
+                    if let Some(colliders) = self
+                        .particles_per_pixel
+                        .get_vec(&(pixel + Vector2::new(*dx, *dy)))
+                    {
+                        for p2 in colliders {
+                            apply_collision(*p2);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn full_update(&mut self) {
+        for _ in 0..NUM_FRAMES_PER_FULL_UPDATE {
+            self.update_physics();
+        }
+        self.update_pixels();
+        self.update_collision();
     }
 
     pub fn ascii_render(&self, pixel_size: Vector2<i32>) -> String {
