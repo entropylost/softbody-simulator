@@ -11,5 +11,5 @@ void main() {
     vec2 pos = texelFetch(posVel, idPos, 0).xy;
     toKeep = texelFetch(type, idPos, 0).x;
     gl_Position = vec4(pos / HALF_WORLD_SIZE, 0.0, 1.0);
-    gl_PointSize = 3.0;
+    gl_PointSize = 1.0;
 }
