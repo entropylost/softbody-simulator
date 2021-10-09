@@ -10,7 +10,6 @@ module.exports = (canvas) => {
 
     const gl = twgl.getContext(canvas, {
         powerPreference: 'high-performance',
-        failIfMajorPerformanceCaveat: true,
         antialias: false,
     });
     if (gl === null) {
