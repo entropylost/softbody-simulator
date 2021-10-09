@@ -29,6 +29,8 @@ fn main() -> Result<()> {
             "Invalid number of arguments.
 Usage:
 > create /path/to/image.png /path/to/out.map
+
+The image should consist of only white and black pixels.
 "
         );
     }
@@ -50,7 +52,7 @@ Usage:
 
     File::create(&args[2])?.write_all(&output)?;
 
-    println!("Successfully wrote map to `{}`.", args[2]);
+    println!("Successfully written map to `{}`.", args[2]);
 
     Ok(())
 }

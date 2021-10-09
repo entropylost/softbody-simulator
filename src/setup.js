@@ -16,7 +16,7 @@ module.exports = (canvas) => {
         throw new Error('Unable to get high-performance webgl2 context');
     }
 
-    const { sources, width, height } = initData(require('/assets/start-small.map'));
+    const { sources, width, height } = initData(require('/assets/start-2.map'));
 
     canvas.width = width;
     canvas.height = height;
